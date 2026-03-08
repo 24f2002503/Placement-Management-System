@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile{% endblock %} 
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+
+        <h2>Edit Profile</h2>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div>
+                {{ form.name.label }}
+                {{ form.name() }}
+            </div>
+
+            <div>
+                {{ form.email.label }}
+                {{ form.email() }}
+            </div>
+
+            <div>
+                {{ form.password.label }}
+                <small>(Leave blank to keep same password)</small>
+                {{ form.password() }}
+            </div>
+
+            <div>
+                {{ form.dept.label }}
+                {{ form.dept() }}
+            </div>
+
+            <div>
+                {{ form.resume.label }}
+                {{ form.resume() }}
+            </div>
+
+            <div style="margin-top: 15px;">
+                {{ form.submit(class="btn btn-primary") }}
+
+                <a href="{{ url_for('student_dashboard') }}"
+                    class="btn btn-secondary">
+                    Back
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

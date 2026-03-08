@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}{{ drive.drivename }}{% endblock %}
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card">
+
+        <h2>{{ drive.drivename }}</h2>
+
+        <table>
+            <tr>
+                <th>Company</th>
+                <td>{{ drive.company.name }}</td>
+            </tr>
+
+            <tr>
+                <th>Job Title</th>
+                <td>{{ drive.job_title }}</td>
+            </tr>
+
+            <tr>
+                <th>Description</th>
+                <td>{{ drive.description }}</td>
+            </tr>
+
+            <tr>
+                <th>Eligibility</th>
+                <td>{{ drive.eligibility }}</td>
+            </tr>
+
+            <tr>
+                <th>Package</th>
+                <td>{{ drive.package }}</td>
+            </tr>
+
+            <tr>
+                <th>Deadline</th>
+                <td>{{ drive.deadline }}</td>
+            </tr>
+        </table>
+
+        <div style="gap: 10px; margin-bottom: 20px; margin-top: 20px;">
+            {% if has_deadline_passed %}
+            <p>The deadline has already passed!</p>
+            {% else %}
+            {% if existing %}
+            <div style="display: block;">
+            <p>You have applied already.</p>
+        <p>Please check your status on the dashboard.</p>
+        </div>
+            {% else %}
+            <a style="display: block; width: 60px" href="{{ url_for('apply_drive', drive_id=drive.id)}}"
+               class="btn btn-success">
+               Apply 
+            </a>
+            {% endif %}
+            {% endif %}
+
+            <a style="display: block; width: 60px;" href="{{ url_for('view_company', company_id=drive.company.id) }}"
+               class="btn btn-secondary">
+               Go Back 
+            </a> 
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

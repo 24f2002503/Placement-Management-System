@@ -535,13 +535,110 @@ def edit_company_profile():
                         
     return render_template('edit_company_profile.html', form=form)
 
+@app.route('/student/company/<int:company_id>', methods=['GET', 'POST'])
+def view_company(company_id):
+    if 'user_id' not in session or session['role'] != 'student' or session['status']:
+        return redirect(url_for('login'))
+    
+    company = Company.query.get_or_404(company_id)
+
+    drives = PlacementDrive.query.filter_by(
+        company_id=company_id,
+        status='Open'
+    ).all()
+
+    return render_template(
+        'view_company.html',
+        company=company,
+        drives=drives
+    )
+
+@app.route('/student/drive/<int:drive_id>', methods=['GET', 'POST'])
+def view_drive(drive_id):
+    if 'user_id' not in session or session['role'] != 'student' or session['status']:
+        return redirect(url_for('login'))
+    
+    drive = PlacementDrive.query.get_or_404(drive_id)
+    deadline=drive.deadline
+    today= date.today()
+    has_deadline_passed = today > deadline
+    student_id = session['user_id']
+
+    existing = Application.query.filter_by(
+        student_id=student_id,
+        drive_id=drive_id
+    ).first()
+    return render_template(
+        'view_drive.html',
+        drive=drive,has_deadline_passed=has_deadline_passed, today=today, deadline=deadline, existing=existing
+    )
+
+@app.route('/student/apply/<int:drive_id>')
+def apply_drive(drive_id):
+    if 'user_id' not in session or session['role'] != 'student' or session['status']:
+        return redirect(url_for('login'))
+    
+    student_id = session['user_id']
+
+    existing = Application.query.filter_by(
+        student_id=student_id,
+        drive_id=drive_id
+    ).first()
+
+    if existing:
+        return redirect(url_for('student_dashboard'))
+    
+    new_application = Application(
+        student_id=student_id,
+        drive_id=drive_id
+    )
+    
+    db.session.add(new_application)
+    db.session.commit()
+
+    return redirect(url_for('student_dashboard'))
+
+@app.route('/student/edit_profile', methods=['GET', 'POST'])
+def edit_student_profile():
+    if 'user_id' not in session or session['role'] != 'student' or session['status']:
+        return redirect(url_for('login'))
+
+    student = Student.query.get_or_404(session['user_id'])
+    form = EditStudentForm(obj=student)
+
+    if form.validate_on_submit():
+
+        student.name = form.name.data
+        student.email = form.email.data
+        student.dept = form.dept.data
+        if form.resume.data:
+            resume_file = form.resume.data
+
+            filename = secure_filename(resume_file.filename)
+            filename = f"{student.id}_{filename}"
+
+            resume_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            resume_file.save(resume_path)
+
+            student.resume_path = resume_path
+
+
+        if form.password.data:
+            student.password = generate_password_hash(form.password.data)
+
+        db.session.commit()
+
+        flash('Profile updated successfully', 'success')
+        return redirect(url_for('student_dashboard'))
+                        
+    return render_template('edit_student_profile.html', form=form)
+        
 def create_admin():
     admin=Admin.query.filter_by(email="admin@gmail.com").first()
     if not admin:
         adminn=Admin(id=1234, email="admin@gmail.com", password=generate_password_hash("admin252007"))
         db.session.add(adminn)
         db.session.commit()
-
 
 if __name__ =='__main__':
     with app.app_context():

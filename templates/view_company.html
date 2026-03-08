@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ company.name }}{% endblock %}
+
+{% block content %}
+
+<h2>{{ company.name }}</h2>
+
+
+<div class="section">
+    <div class="card">
+
+        <h3>Company Overview</h3>
+        <p>{{ company.overview }}</p>
+
+    </div>
+</div>
+
+
+
+<div class="section">
+    <div class="card">
+
+        <h3>Current Drive</h3>
+
+        <table>
+            <tr>
+                <th>Drive Name</th>
+                <th>Action</th>
+            </tr>
+
+            {% for drive in drives %}
+            <tr>
+                <td>{{ drive.drivename }}</td>
+                <td>
+                    <a href="{{ url_for('view_drive', drive_id=drive.id) }}" 
+                       class="btn btn-primary">
+                       View Details
+                    </a>  
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('student_dashboard') }}"
+            class="btn btn-secondary">
+            Back
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}
