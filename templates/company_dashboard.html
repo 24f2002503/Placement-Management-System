@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Company Dashboard{% endblock %}
+
+{% block content %}
+
+<h2>Company Dashboard</h2>
+
+<div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <a href="{{ url_for('edit_company_profile') }}"
+    class="btn btn-secondary">
+    Edit Profile
+    </a>
+
+    <a href="{{ url_for('create_drive') }}"
+    class="btn btn-primary">
+    Create Drive
+    </a>
+</div>
+
+
+
+<div class="section">
+    <div class="card">
+        <h3>Upcoming Drives</h3>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Drive Name</th>
+                <th>Actions</th>
+            </tr>
+
+            {% for drive in upcoming_drives %}
+            <tr>
+                <td>{{ drive.id }}</td>
+                <td>{{ drive.drivename }}</td>
+                <td>
+                    <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <a href="{{ url_for('view_drive_applications', drive_id=drive.id) }}"
+                           class="btn btn-primary">
+                            View Details
+                        </a>
+
+                        <a href="{{ url_for('close_drive', drive_id=drive.id) }}"
+                           class="btn btn-danger">
+                            Mark as Complete
+                        </a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+
+
+<div class="section">
+    <div class="card">
+        <h3>Closed Drives</h3>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Drive Name</th>
+            </tr>
+
+            {% for drive in closed_drives %}
+            <tr>
+                <td>{{ drive.id }}</td>
+                <td>{{ drive.drivename }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+{% endblock %}

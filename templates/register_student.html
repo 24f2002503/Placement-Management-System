@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Student Registration{% endblock %}
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card" style="max-width: 600px; margin: 60 px auto;">
+
+        <h2>Register as Student</h2>
+
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }}
+
+            <div>
+                {{ form.name.label }}
+                {{ form.name() }}
+            </div>
+
+            <div>
+                {{ form.email.label }}
+                {{ form.email() }}
+            </div>
+
+            <div>
+                {{ form.password.label }}
+                {{ form.password() }}
+            </div>
+
+            <div>
+                {{ form.dept.label }}
+                {{ form.dept() }}
+            </div>
+
+            <div>
+                {{ form.resume.label }}
+                <small>(Upload pdf only)</small>
+                {{ form.resume() }}
+            </div>
+            
+            <div style="margin-top: 15px;">
+                {{ form.submit(class="btn btn-primary") }}
+            </div>
+        </form>
+
+        <div style="margin-top: 15px;">
+             <small>
+                 Already have an account?
+                <a href="{{ url_for('login') }}">Login</a>
+                </small>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

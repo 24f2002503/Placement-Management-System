@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <title>{% block title %}Placement Portal{% endblock %}</title>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+
+    <div class="header">
+        <div>
+            <strong>Placement Portal</strong>
+        </div>
+
+        <div>
+            {% if session.get('user_id') %}
+                 <span style="font-weight: medium ; font-size: 20px; font-family:'Times New Roman', Times, serif;">Welcome {{ session.get('name') }}</span>
+
+                {% if session.get('role') == 'admin' %}
+                     <a href="{{ url_for('admin_dashboard') }}" class="dashboard-btn">Dashboard</a>
+                {% elif session.get('role') == 'company' %}
+                     <a href="{{ url_for('company_dashboard') }}" class="dashboard-btn">Dashboard</a>
+               {% elif session.get('role') == 'student' %}
+                     <a href="{{ url_for('student_dashboard') }}" class="dashboard-btn">Dashboard</a>
+               {% endif %}
+
+                  <a href="{{ url_for('logout') }}" class="dashboard-btn">Logout</a>
+            {% else %}
+                 <a href="{{ url_for('login') }}" class="dashboard-btn">Login</a>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+    <div class="container">
+
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}
+        {% endblock %}
+
+    </div>
+
+</body>
+</html>
