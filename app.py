@@ -316,24 +316,33 @@ def admin_dashboard():
     
     if search_query:
         companies = Company.query.filter(
-            Company.name.ilike(f"%{search_query}")
+            Company.name.ilike(f"%{search_query}%")
         ).all()
 
         students = Student.query.filter(
-            Student.name.ilike(f"%{search_query}")
-        ).all()
+            Student.name.ilike(f"%{search_query}%") | (Student.id == search_query)  | (Student.email.ilike(f"%{search_query}%"))
+            ).all()
 
         ongoing_drives = PlacementDrive.query.filter(
-            PlacementDrive.drivename.ilike(f"{search_query}"),
+            PlacementDrive.drivename.ilike(f"%{search_query}%"),
             PlacementDrive.status == 'Open'
+        ).all()
+
+        unapproved_companies= Company.query.filter(
+            Company.name.ilike(f"%{search_query}%"),
+            Company.is_approved == False
+        ).all()
+        applications= Application.query.join(Student).join(PlacementDrive).join(Company).filter(
+    (Student.name.ilike(f"%{search_query}%")) |
+    (Company.name.ilike(f"%{search_query}%"))
         ).all()
     else:
         companies = Company.query.filter_by(is_approved=True).all()
         students = Student.query.all()
         ongoing_drives = PlacementDrive.query.filter_by(status='Open').all()
 
-    unapproved_companies = Company.query.filter_by(is_approved=False).all()
-    applications = Application.query.all()
+        unapproved_companies = Company.query.filter_by(is_approved=False).all()
+        applications = Application.query.all()
 
     return render_template(
         'admin_dashboard.html',
@@ -342,6 +351,87 @@ def admin_dashboard():
         unapproved_companies=unapproved_companies,
         ongoing_drives=ongoing_drives,
         applications=applications
+    )
+
+@app.route('/admin/company/<int:company_id>/blacklist')
+def blacklist_company(company_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('login'))
+    
+    company = Company.query.get_or_404(company_id)
+    if not company.is_blacklisted:
+        company.is_blacklisted = True
+
+        drives = PlacementDrive.query.filter_by(company_id=company.id).all()
+        for drive in drives:
+            if drive.status=='Open':
+                drive.status = 'Blacklisted'
+
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    else:
+        company.is_blacklisted = False
+        drives = PlacementDrive.query.filter_by(company_id=company.id).all()
+        for drive in drives:
+            if drive.status=='Blacklisted' and drive.deadline >=date.today():
+                drive.status = 'Open'
+
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/student/<int:student_id>/blacklist')
+def blacklist_student(student_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('login'))
+
+    student = Student.query.get_or_404(student_id)
+    if not student.is_blacklisted:
+        student.is_blacklisted = True
+
+        appl=Application.query.filter_by(student_id=student_id).all()
+        for a in appl:
+            db.session.delete(a)
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    else:
+        student.is_blacklisted = False
+
+        db.session.commit()
+        return redirect(url_for('admin_dashboard'))
+    return redirect(url_for('admin_dashboard'))
+    
+@app.route('/admin/student/<int:company_id>/approve')
+def approve_company(company_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('login'))
+
+    company = Company.query.get_or_404(company_id)
+    company.is_approved = True
+
+    db.session.commit()
+
+    return redirect(url_for('admin_dashboard'))
+    
+@app.route('/admin/drive/<int:drive_id>')
+def admin_view_drive(drive_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('login'))
+
+    drive = PlacementDrive.query.get_or_404(drive_id
+                                            )
+    return render_template('admin_drive_details.html', drive=drive)
+    
+@app.route('/admin/applications/<int:app_id>')
+def admin_view_application(app_id):
+    if 'user_id' not in session or session['role'] != 'admin':
+        return redirect(url_for('login'))
+
+    application = Application.query.get_or_404(app_id)
+
+    return render_template(
+        'admin_applications_details.html',
+        application=application
     )
 
 def create_admin():
@@ -358,4 +448,4 @@ if __name__ =='__main__':
         create_admin()
     app.run(debug=True)
 
-    
+   

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Student Applications{% endblock %}
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card">
+
+        <h2>Student Applications</h2>
+
+        <table>
+            <tr>
+                <th>Name</th>
+                <td>{{ application.student.dept }}</td>
+            </tr>
+
+            <tr>
+                <th>Department</th>
+                <td>{{ application.drive.drivename }}</td>
+            </tr>
+
+            <tr>
+                <th>Drive</th>
+                <td> {{ application.drive.drivename }}</application></td>
+            </tr>
+
+            <tr>
+                <th>Job Title</th>
+                <td>{{ application.drive.job_title  }}</td>
+            </tr>
+
+            <tr>
+                <th>Status</th>
+                <td>{{ application.status }}</td>
+            </tr>
+        </table>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; margin-top: 20px;">
+            <a href="{{ url_for('uploaded_file', filename=application.student.resume_path) }}"
+    class="btn btn-primary"
+    target="_blank">
+     View Resume 
+</a>
+
+            <a href="{{ url_for('admin_dashboard')}}"
+               class="btn btn-secondary">
+                Back 
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{{ drive.drivename }}{% endblock %}
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card">
+
+        <h2>{{ drive.drivename }}</h2>
+
+        <table>
+            <tr>
+                <th>Company</th>
+                <td>{{ drive.company.name }}</td>
+            </tr>
+
+            <tr>
+                <th>Job Title</th>
+                <td>{{ drive.job_title }}</td>
+            </tr>
+
+            <tr>
+                <th>Description</th>
+                <td>{{ drive.description }}</td>
+            </tr>
+
+            <tr>
+                <th>Eligibility</th>
+                <td>{{ drive.eligibility }}</td>
+            </tr>
+
+            <tr>
+                <th>Package</th>
+                <td>{{ drive.package }}</td>
+            </tr>
+
+            <tr>
+                <th>Deadline</th>
+                <td>{{ drive.deadline }}</td>
+            </tr>
+        </table>
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('admin_dashboard')}}"
+            class="btn btn-secondary">
+            Go Back
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
