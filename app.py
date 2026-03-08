@@ -632,7 +632,32 @@ def edit_student_profile():
         return redirect(url_for('student_dashboard'))
                         
     return render_template('edit_student_profile.html', form=form)
-        
+@app.route('/student/history')
+def student_history():
+    if 'user_id' not in session or session['role'] != 'student' or session['status']:
+        return redirect(url_for('login'))
+    
+    student_id = session['user_id']
+
+    applications = Application.query.filter_by(
+        student_id=student_id
+        ).all()
+
+    return render_template(
+        'student_history.html',
+        applications=applications
+    )
+    
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename[8:])
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
 def create_admin():
     admin=Admin.query.filter_by(email="admin@gmail.com").first()
     if not admin:
