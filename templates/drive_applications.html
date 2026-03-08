@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Applications for {{ drive.drivename }}{% endblock %}
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card">
+
+        <h2>Application for {{ drive.drivename }}</h2>
+        <p><strong>Job Title:</strong> {{ drive.job_title }}</p>
+
+        <table>
+            <tr>
+                <th>Student Name</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+
+            {% for app in applications %}
+            <tr>
+                <td>{{ app.student.name }}</td>
+                <td>{{ app.status }}</td>
+                <td>
+                    <a href="{{ url_for('review_application', app_id=app.id) }}"
+                       class="btn btn-primary">
+                       Review Applications
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('company_dashboard') }}"
+               class="btn btn-secondary">
+               Back
+            </a>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

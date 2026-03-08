@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Create a Drive{% endblock %} 
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+
+        <h2>Create a Drive</h2>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div>
+                {{ form.drivename.label }}
+                {{ form.drivename() }}
+            </div>
+
+            <div>
+                {{ form.job_title.label }}
+                {{ form.job_title }}
+            </div>
+
+            <div>
+                {{ form.description.label }}
+                {{ form.description() }}
+            </div>
+
+            <div>
+                {{ form.eligibility.label }}
+                {{ form.eligibility() }}
+            </div>
+
+            <div>
+                {{ form.package.label }}
+                {{ form.package() }}
+            </div>
+
+            <div>
+                {{ form.deadline.label }}
+                {{ form.deadline() }}
+            </div>
+
+            <div style="margin-top: 15px;">
+                {{ form.submit(class="btn btn-primary") }}
+
+                <a href="{{ url_for('company_dashboard') }}"
+                class="btn btn-secondary">
+                Back
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

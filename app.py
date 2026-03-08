@@ -434,6 +434,107 @@ def admin_view_application(app_id):
         application=application
     )
 
+@app.route('/company/drive/<int:drive_id>')
+def view_drive_applications(drive_id):
+    if 'user_id' not in session or session['role'] != 'company' or session['status']:
+        return redirect(url_for('login'))
+    
+    drive = PlacementDrive.query.get_or_404(drive_id)
+    applications = drive.applications
+
+    return render_template(
+        'drive_applications.html',
+        drive=drive,
+        applications=applications
+    )
+
+@app.route('/company/drive/<int:drive_id>/close')
+def close_drive(drive_id):
+    if 'user_id' not in session or session['role'] != 'company' or session['status']:
+        return redirect(url_for('login'))
+    
+    drive = PlacementDrive.query.get_or_404(drive_id)
+
+
+    if drive.company_id != session['user_id']:
+        return redirect(url_for('company_dashboard'))
+    
+    drive.status= 'Close'
+    db.session.commit()
+
+    return redirect(url_for('company_dashboard'))
+
+@app.route('/company/applications/<int:app_id>', methods=['GET', 'POST'])
+def review_application(app_id):
+    if 'user_id' not in session or session['role'] != 'company' or session['status']:
+        return redirect(url_for('login'))
+    
+    application = Application.query.get_or_404(app_id)
+    form = ApplicationForm()
+
+    if form.validate_on_submit():
+        application.status = form.status.data
+        db.session.commit()
+        return redirect(url_for('view_drive_applications', drive_id=application.drive_id))
+    
+    return render_template(
+        'review_application.html',
+        application=application,
+        form=form
+    )
+
+@app.route('/company/create_drive', methods=['GET', 'POST'])
+def create_drive():
+    if 'user_id' not in session or session['role'] != 'company' or session['status']:
+        return redirect(url_for('login'))
+
+    form=PlacementDriveForm()
+
+    if form.validate_on_submit():
+        new_drive = PlacementDrive(
+        drivename=form.drivename.data,
+        job_title=form.job_title.data,
+        description=form.description.data,
+        eligibility=form.eligibility.data,
+        package=form.package.data,
+        deadline= form.deadline.data,
+        company_id=session['user_id'],
+        status='Open'
+        )
+
+        db.session.add(new_drive)
+        db.session.commit()
+    
+        return redirect(url_for('company_dashboard'))
+    
+    return render_template('create_drive.html', form=form)
+
+@app.route('/company/edit_profile', methods=['GET', 'POST'])
+def edit_company_profile():
+    if 'user_id' not in session or session['role'] != 'company' or session['status']:
+        return redirect(url_for('login'))
+
+    company = Company.query.get_or_404(session['user_id'])
+    form = EditCompanyForm(obj=company)
+
+    if form.validate_on_submit():
+
+        company.name = form.name.data
+        company.hr_contact = form.hr_contact.data
+        company.website = form.website.data
+        company.overview = form.overview.data
+
+
+        if form.password.data:
+            company.password = generate_password_hash(form.password.data)
+
+        db.session.commit()
+
+        flash('Profile updated successfully', 'success')
+        return redirect(url_for('company_dashboard'))
+                        
+    return render_template('edit_company_profile.html', form=form)
+
 def create_admin():
     admin=Admin.query.filter_by(email="admin@gmail.com").first()
     if not admin:

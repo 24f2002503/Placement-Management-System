@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Edit Company Profile{% endblock %}
+
+{% block content %}
+
+<div class="section">
+
+    <div class="card" style="max-width: 600px; margin: 0 auto;">
+
+        <h2>Edit Company Profile</h2>
+
+        <form method="POST">
+            {{ form.hidden_tag() }}
+
+            <div>
+                {{ form.name.label }}
+                {{ form.name() }}
+            </div>
+
+            <div>
+                {{ form.password.label }}
+                <small>(Leave blank to keep same password)</small>
+                {{ form.password() }}
+            </div>
+
+            <div>
+                {{ form.hr_contact.label }}
+                {{ form.hr_contact() }}
+            </div>
+
+            <div>
+                {{ form.website.label }}
+                {{ form.website() }}
+            </div>
+
+            <div>
+                {{ form.overview.label }}
+                {{ form.overview() }}
+            </div>
+
+            <div style="margin-top: 15px;">
+                {{ form.submit(class="btn btn-primary") }}
+
+                <a href="{{ url_for('company_dashboard') }}"
+                class="btn btn-secondary">
+                Back
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}
