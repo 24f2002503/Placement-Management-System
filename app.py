@@ -21,7 +21,7 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 db = SQLAlchemy(app)
 
 class LoginForm(FlaskForm):
-    email = StringField('E-mail', validators=[DataRequired(), Length(max=80)])
+    email = StringField('E-mail', validators=[DataRequired(), Length(max=80), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     role = SelectField(
         'Role',
@@ -36,7 +36,7 @@ class LoginForm(FlaskForm):
 class CompanyForm(FlaskForm):
     name = StringField('Company Name', validators=[DataRequired(),Length(max=100)])
     password = PasswordField('Password', validators=[DataRequired()])
-    hr_contact = StringField('HR Contact', validators=[Length(max=100)])
+    hr_contact = StringField('HR Contact', validators=[DataRequired(), Length(max=100), Email()])
     website = StringField('Website', validators=[Length(max=200)])
     overview = TextAreaField('Company Overview')
     submit =SubmitField('Save Company')
@@ -334,7 +334,7 @@ def admin_dashboard():
         ).all()
         applications= Application.query.join(Student).join(PlacementDrive).join(Company).filter(
     (Student.name.ilike(f"%{search_query}%")) |
-    (Company.name.ilike(f"%{search_query}%"))
+    (Company.name.ilike(f"%{search_query}%")) | Student.email.ilike(f"%{search_query}%")
         ).all()
     else:
         companies = Company.query.filter_by(is_approved=True).all()
